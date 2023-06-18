@@ -1,0 +1,165 @@
+<p-toast></p-toast>
+<p-table [value]="products" dataKey="id" [columns]="cols" [reorderableColumns]="true" [(selection)]="selectedProducts"
+    editMode="row" [tableStyle]="{'min-width': '50rem'}">
+    <ng-template pTemplate="header">
+        <tr>
+            <th></th>
+            <th></th>
+            <th style="width: 4rem">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th style="width:20%" pReorderableColumn>Code</th>
+            <th style="width:20%" pReorderableColumn>Name</th>
+            <th style="width:20%" pReorderableColumn>Inventory Status</th>
+            <th style="width:20%" pReorderableColumn>Price</th>
+            <th style="width:20%" pReorderableColumn>
+                <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success mr-2"
+                    (click)="openNew()"></button>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-product let-expanded="expanded" let-editing="editing" let-ri="rowIndex"
+        let-rowData let-columns="columns" let-index="rowIndex">
+        <tr [pEditableRow]="product" [pReorderableRow]="index">
+            <td>
+                <span class="pi pi-bars" pReorderableRowHandle></span>
+            </td>
+            <td>
+                <button type="button" pButton pRipple [pRowToggler]="product"
+                    class="p-button-text p-button-rounded p-button-plain"
+                    [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+            </td>
+            <td>
+                <p-tableCheckbox [value]="product"></p-tableCheckbox>
+            </td>
+            <td>
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <input pInputText type="text" [(ngModel)]="product.code">
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        {{product.code}}
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+            <td>
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <input pInputText type="text" [(ngModel)]="product.name" required>
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        {{product.name}}
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+            <td>
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <p-dropdown [options]="statuses" appendTo="body" [(ngModel)]="product.inventoryStatus"
+                            [style]="{'width':'100%'}"></p-dropdown>
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        {{product.inventoryStatus}}
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+            <td>
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <input pInputText type="text" [(ngModel)]="product.price">
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        {{product.price | currency: 'USD'}}
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+            <td>
+                <div class="flex align-items-center justify-content-center gap-2">
+                    <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
+                        (click)="onRowEditInit(product)" class="p-button-rounded p-button-text"></button>
+                    <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
+                        (click)="onRowEditSave(product)"
+                        class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                    <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
+                        (click)="onRowEditCancel(product, ri)"
+                        class="p-button-rounded p-button-text p-button-danger"></button>
+                    <button pButton pRipple type="button" icon="pi pi-trash" (click)="deleteSelectedProducts()"
+                        [disabled]="!selectedProducts || !selectedProducts.length"
+                        class="p-button-rounded p-button-text p-button-danger"></button>
+                    <button pButton pRipple type="button" icon="pi pi-plus" class="p-button-rounded p-button-success p-button-text" (click)="addNewChild(product.code)"
+                        [disabled]="!selectedProducts || !selectedProducts.length"
+                        ></button>
+                </div>
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="rowexpansion" let-product let-editing="editing" let-ri="rowIndex" let-rowData>
+        <tr [pEditableRow]="product" *ngFor="let child of product.children">
+            <td></td>
+            <td></td>
+            <td>
+                <p-tableCheckbox [value]="product.children"></p-tableCheckbox>
+            </td>
+            <td>
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <input pInputText type="text" [(ngModel)]="child.code">
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        {{child.code}}
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+            <td>
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <input pInputText type="text" [(ngModel)]="child.name" required>
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        {{child.name}}
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+            <td>
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <p-dropdown [options]="statuses" appendTo="body" [(ngModel)]="child.inventoryStatus"
+                            [style]="{'width':'100%'}"></p-dropdown>
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        {{child.inventoryStatus}}
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+            <td>
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <input pInputText type="text" [(ngModel)]="child.price">
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        {{child.price | currency: 'USD'}}
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+            {{editing}}
+            <td>
+                <div class="flex align-items-center justify-content-center gap-2">
+                    <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
+                        (click)="onRowEditInit(child)" class="p-button-rounded p-button-text"></button>
+                    <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
+                        (click)="onRowEditSave(child)"
+                        class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                    <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
+                        (click)="onRowEditCancel(child, ri)"
+                        class="p-button-rounded p-button-text p-button-danger"></button>
+                    <button pButton pRipple type="button" icon="pi pi-trash" (click)="deleteSelectedProducts()"
+                        [disabled]="!selectedProducts || !selectedProducts.length"
+                        class="p-button-rounded p-button-text p-button-danger"></button>
+                    <button pButton pRipple type="button" icon="pi pi-plus" class="p-button-rounded p-button-success p-button-text" (click)="addNewChild(product.code)"
+                        [disabled]="!selectedProducts || !selectedProducts.length"
+                        ></button>
+                </div>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>

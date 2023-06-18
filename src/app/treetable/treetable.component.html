@@ -1,0 +1,37 @@
+<div class="card">
+    <p-treeTable [value]="files" [columns]="cols" selectionMode="checkbox" [(selection)]="selectedNodes" [scrollable]="true" [tableStyle]="{'min-width':'50rem'}">
+        <ng-template pTemplate="caption"> FileViewer </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th><p-treeTableHeaderCheckbox></p-treeTableHeaderCheckbox></th>
+                <th *ngFor="let col of columns">
+                    {{ col.header }}
+                </th>
+                <th style="width: 10rem">
+                    <p-button icon="pi pi-cog"></p-button>
+                </th>
+                <th style="width:20%" pReorderableColumn>
+                <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success mr-2"
+                    (click)="openNew()"></button>
+            </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+            <tr>
+                <td *ngFor="let col of columns; let i = index">
+                    <p-treeTableToggler [rowNode]="rowNode" *ngIf="i === 0"></p-treeTableToggler>
+                    {{ rowData[col.field] }}
+                </td>
+                <td>
+                    <p-button icon="pi pi-search" styleClass="p-button-success" [style]="{ 'margin-right': '.5em' }"></p-button>
+                    <p-button icon="pi pi-pencil" styleClass="p-button-warning"></p-button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            <div style="text-align:left">
+                <p-button icon="pi pi-refresh" label="Reload"></p-button>
+            </div>
+        </ng-template>
+    </p-treeTable>
+</div>
